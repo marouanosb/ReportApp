@@ -1,5 +1,7 @@
 package view;
 
+import controller.Controller;
+import models.*;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -10,6 +12,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +45,25 @@ public class MainFrame extends JFrame {
 					frame.setVisible(true);
 					
 					//defaut startp-up on historyPanel
+					Controller controller = new Controller();
+					controller.createDB();
 					historyButton.doClick();
+					
+					//testing db
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					Material m = new Material("mat", 20);
+					Action a = new Action("reparationn",m,"tsagmo","","",LocalDateTime.now().format(formatter));
+					
+					controller.insert(a);
+					controller.insert(a);
+					controller.insert(a);
+					controller.insert(a);
+					
+					ArrayList<Action> list = new ArrayList<Action>();
+					list = controller.getAll("date");
+					for (Action item : list ) {
+						System.out.println(item.getActionType());
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -55,6 +77,7 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1000, 500);
+		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		setContentPane(contentPane);

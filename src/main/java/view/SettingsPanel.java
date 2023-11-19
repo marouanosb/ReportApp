@@ -23,17 +23,53 @@ public class SettingsPanel extends JPanel {
 	public SettingsPanel() {
 		setBounds(0,0,1000,500);
 		setBackground(new Color(213, 234, 255));
-		setLayout(null);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{30, 200, 250, 0};
+		gridBagLayout.rowHeights = new int[]{30, 30, 30, 30, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		setLayout(gridBagLayout);
 		
 		JButton generateReportButton = new JButton("Generate Report");
 		generateReportButton.setFocusPainted(false);
 		generateReportButton.setFont(new Font("Arial", Font.PLAIN, 14));
 		generateReportButton.setBackground(new Color(0, 128, 255));
 		generateReportButton.setForeground(new Color(255, 255, 255));
-		generateReportButton.setBounds(30, 30, 200, 30);
 		generateReportButton.setMargin(new Insets(0,5,0,5));
 		generateReportButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-		add(generateReportButton);
+		GridBagConstraints gbc_generateReportButton = new GridBagConstraints();
+		gbc_generateReportButton.fill = GridBagConstraints.BOTH;
+		gbc_generateReportButton.insets = new Insets(0, 0, 5, 5);
+		gbc_generateReportButton.gridx = 1;
+		gbc_generateReportButton.gridy = 1;
+		add(generateReportButton, gbc_generateReportButton);
+		
+		JButton goToPath = new JButton(">");
+		goToPath.setForeground(Color.WHITE);
+		goToPath.setFont(new Font("Arial", Font.PLAIN, 14));
+		goToPath.setFocusPainted(false);
+		goToPath.setBackground(new Color(0, 0, 160));
+		goToPath.setMargin(new Insets(0,5,0,5));
+		goToPath.setBorder(new EmptyBorder(5, 5, 5, 5));
+		GridBagConstraints gbc_goToPath = new GridBagConstraints();
+		gbc_goToPath.anchor = GridBagConstraints.EAST;
+		gbc_goToPath.fill = GridBagConstraints.VERTICAL;
+		gbc_goToPath.insets = new Insets(0, 0, 5, 0);
+		gbc_goToPath.gridx = 2;
+		gbc_goToPath.gridy = 1;
+		add(goToPath, gbc_goToPath);
+		
+		JLabel reportPathLabel = new JLabel("LOCATION :   ./report/report.docx");
+		reportPathLabel.setBackground(new Color(255, 255, 255));
+		reportPathLabel.setForeground(new Color(0, 0, 0));
+		reportPathLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+		
+		GridBagConstraints gbc_reportPathLabel = new GridBagConstraints();
+		gbc_reportPathLabel.fill = GridBagConstraints.BOTH;
+		gbc_reportPathLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_reportPathLabel.gridx = 2;
+		gbc_reportPathLabel.gridy = 1;
+		add(reportPathLabel, gbc_reportPathLabel);
 		
 		JButton resetDataButton = new JButton("Reset Data");
 		resetDataButton.setFocusPainted(false);
@@ -42,31 +78,20 @@ public class SettingsPanel extends JPanel {
 		resetDataButton.setBackground(new Color(220, 20, 60));
 		resetDataButton.setMargin(new Insets(0,5,0,5));
 		resetDataButton.setBorder(new EmptyBorder(5, 5, 5, 5));
-		resetDataButton.setBounds(30, 90, 200, 30);
-		add(resetDataButton);
+		GridBagConstraints gbc_resetDataButton = new GridBagConstraints();
+		gbc_resetDataButton.fill = GridBagConstraints.BOTH;
+		gbc_resetDataButton.insets = new Insets(0, 0, 0, 5);
+		gbc_resetDataButton.gridx = 1;
+		gbc_resetDataButton.gridy = 3;
+		add(resetDataButton, gbc_resetDataButton);
 		
 		JLabel resetWarningLabel = new JLabel("(Reseting data is irriversible)");
 		resetWarningLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 		resetWarningLabel.setForeground(new Color(220, 20, 60));
-		resetWarningLabel.setBounds(240, 90, 230, 30);
-		add(resetWarningLabel);
-		
-		JLabel reportPathLabel = new JLabel("LOCATION :   ./report/report.docx");
-		reportPathLabel.setBackground(new Color(255, 255, 255));
-		reportPathLabel.setForeground(new Color(0, 0, 0));
-		reportPathLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-		reportPathLabel.setBounds(240, 30, 230, 30);
-		
-		add(reportPathLabel);
-		
-		JButton goToPath = new JButton(">");
-		goToPath.setForeground(Color.WHITE);
-		goToPath.setFont(new Font("Arial", Font.PLAIN, 14));
-		goToPath.setFocusPainted(false);
-		goToPath.setBackground(new Color(0, 0, 160));
-		goToPath.setBounds(460, 30, 30, 30);
-		goToPath.setMargin(new Insets(0,5,0,5));
-		goToPath.setBorder(new EmptyBorder(5, 5, 5, 5));
-		add(goToPath);
+		GridBagConstraints gbc_resetWarningLabel = new GridBagConstraints();
+		gbc_resetWarningLabel.fill = GridBagConstraints.BOTH;
+		gbc_resetWarningLabel.gridx = 2;
+		gbc_resetWarningLabel.gridy = 3;
+		add(resetWarningLabel, gbc_resetWarningLabel);
 	}
 }

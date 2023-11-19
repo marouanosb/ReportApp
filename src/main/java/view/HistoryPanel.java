@@ -45,7 +45,6 @@ public class HistoryPanel extends JPanel {
 	public HistoryPanel() {
 		setBounds(0,0,1000,500);
 		setBackground(new Color(213, 234, 255));
-		setLayout(null);
 		
 		String data[][]={{"cassé","briques","20","taho m sma","-","-","12/12/2012"},    
                 {"reparation","madriya","5","voila","-","-","12/12/2021"},
@@ -57,35 +56,46 @@ public class HistoryPanel extends JPanel {
 		String columns[]= {"Action","Material","Quantity","Description","From","To","Date"};
 		DefaultTableModel dtm = new DefaultTableModel(0, 0);
 		dtm.setColumnIdentifiers(columns);
-
-		
-		searchBar = new JTextField();
 		String hint = "Search...";
-		searchBar.setForeground(Color.GRAY);	//setting hint text 
-		searchBar.setText(hint);
-		searchBar.setFont(new Font("Arial", Font.PLAIN, 14));
-		searchBar.setBounds(30, 30, 300, 30);
-		add(searchBar);
-		searchBar.setColumns(10);
-		searchBar.setMargin(new Insets(0,5,0,5));
-		searchBar.setBorder(new EmptyBorder(5, 5, 5, 5));
+				setLayout(null);
 		
-		historyTable = new JTable();
-		historyTable.setModel(dtm);
-		showData(data,historyTable);
-		historyTable.setFillsViewportHeight(true);
-		historyTable.setBounds(30, 90, 940, 370);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(30, 90, 940, 370);
-		add(scrollPane);
-		scrollPane.setViewportView(historyTable);
-		
+				
+				searchBar = new JTextField();
+				searchBar.setBounds(30, 30, 295, 27);
+				searchBar.setForeground(Color.GRAY);	//setting hint text 
+				searchBar.setText(hint);
+				searchBar.setFont(new Font("Arial", Font.PLAIN, 14));
+				add(searchBar);
+				searchBar.setColumns(10);
+				searchBar.setMargin(new Insets(0,5,0,5));
+				searchBar.setBorder(new EmptyBorder(5, 5, 5, 5));
+				
+				
+				
+				// Add a FocusListener to show/hide search the hint
+				searchBar.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (searchBar.getText().equals(hint)) {
+                	searchBar.setText("");
+                	searchBar.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (searchBar.getText().isEmpty()) {
+                	searchBar.setForeground(Color.GRAY);
+                	searchBar.setText(hint);
+                }
+            }
+        });
+				
 		String[] filters = {"Date","Action", "Material"};
 		filtered = false;
+
 		JComboBox sortList = new JComboBox(filters);
-		sortList.setBounds(840, 30, 130, 30);
+		sortList.setBounds(840, 30, 130, 27);
 		sortList.setSelectedIndex(0);
 		sortList.setBackground(Color.WHITE);
 		
@@ -99,11 +109,35 @@ public class HistoryPanel extends JPanel {
 			}
 		});
 		add(sortList);
-
-			
-		historyTable.getTableHeader().setBackground(new Color(0, 128, 255));	//change header color
-		historyTable.getTableHeader().setForeground(Color.WHITE);
-		scrollPane.getVerticalScrollBar().setBackground(new Color(0, 128, 255));
+		
+		historyTable = new JTable();
+		historyTable.setModel(dtm);
+		showData(data,historyTable);
+		historyTable.setFillsViewportHeight(true);
+		historyTable.setBounds(30, 90, 940, 350);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(30, 92, 940, 402);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		add(scrollPane);
+		scrollPane.setViewportView(historyTable);
+		
+					
+				historyTable.getTableHeader().setBackground(new Color(0, 128, 255));	//change header color
+				historyTable.getTableHeader().setForeground(Color.WHITE);
+				scrollPane.getVerticalScrollBar().setBackground(new Color(0, 128, 255));
+				
+				//listener to get index of row selection
+				historyTable.addMouseListener(new java.awt.event.MouseAdapter() {
+				    @Override
+				    public void mouseClicked(java.awt.event.MouseEvent evt) {
+				        selectedRow = historyTable.rowAtPoint(evt.getPoint());
+				        System.out.println((String) historyTable.getValueAt(selectedRow,0)); 
+				    }
+				});
+				historyTable.setDefaultEditor(Object.class, null);
+		
+		
 		
 		// style changes to scroll bar remove from comments after done
 		/*scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI()
@@ -128,37 +162,6 @@ public class HistoryPanel extends JPanel {
 	        }
 	    });
 	    */
-		
-		
-		
-		// Add a FocusListener to show/hide search the hint
-		searchBar.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (searchBar.getText().equals(hint)) {
-                	searchBar.setText("");
-                	searchBar.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (searchBar.getText().isEmpty()) {
-                	searchBar.setForeground(Color.GRAY);
-                	searchBar.setText(hint);
-                }
-            }
-        });
-		
-		//listener to get index of row selection
-		historyTable.addMouseListener(new java.awt.event.MouseAdapter() {
-		    @Override
-		    public void mouseClicked(java.awt.event.MouseEvent evt) {
-		        selectedRow = historyTable.rowAtPoint(evt.getPoint());
-		        System.out.println((String) historyTable.getValueAt(selectedRow,0)); 
-		    }
-		});
-		historyTable.setDefaultEditor(Object.class, null);
 	
 	}
 	
