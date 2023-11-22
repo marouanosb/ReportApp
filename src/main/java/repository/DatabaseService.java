@@ -40,7 +40,7 @@ public class DatabaseService {
 		ArrayList<Action> data = new ArrayList<Action>();
 		connectDB();
 		// Execute a SELECT query
-	    String selectQuery = "SELECT * FROM stock ORDER BY "+orderBy;
+	    String selectQuery = "SELECT * FROM stock ORDER BY " +orderBy+ " DESC";
 	    PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
 	    ResultSet resultSet = preparedStatement.executeQuery();
 	        // Process the result set
@@ -55,6 +55,7 @@ public class DatabaseService {
 	            							);
 	            data.add(action);
 	        }
+	        System.out.println("Got all data.");
 			return data;
 	    
 	    }
@@ -74,14 +75,44 @@ public class DatabaseService {
 	    preparedStatement.setString(7, action.getDate());
 	    
 		preparedStatement.executeUpdate();
+		System.out.println("Inserted successfully.");
 	    }
 	
 	public static void deleteAll() throws SQLException, ClassNotFoundException{
 		connectDB();
 		
-		String insertQuery = "DELETE * FROM stock";
+		String insertQuery = "DELETE FROM stock";
 	    PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
 	    preparedStatement.executeUpdate();
+	    
+	    System.out.println("Deleted successfully.");
+	}
+	
+	public static ArrayList<Action> search(String searchBy) throws ClassNotFoundException, SQLException{
+		connectDB();
+		ArrayList<Action> data = new ArrayList<Action>();
+		String selectQuery = "SELECT * FROM stock WHERE"			
+			    + " material LIKE '%" + searchBy + "%'"
+			    + " OR quantity LIKE '%" + searchBy + "%'"
+			    + " OR description LIKE '%" + searchBy + "%'"
+			    + " OR from_ LIKE '%" + searchBy + "%'"
+			    + " OR to_ LIKE '%" + searchBy + "%'"
+			    + " OR date_ LIKE '%" + searchBy + "%'";
+
+	    PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+	    ResultSet resultSet = preparedStatement.executeQuery();
+		while (resultSet .next()) {
+        	Material material = new Material(resultSet.getString("material"), resultSet.getInt("quantity"));
+            Action action = new Action (resultSet.getString("actionType"),
+            							material,
+            							resultSet.getString("description"),
+            							resultSet.getString("from_"),
+            							resultSet.getString("to_"),
+            							resultSet.getString("date_")
+            							);
+            data.add(action);
+        }
+		return data;
 	}
 	
 	

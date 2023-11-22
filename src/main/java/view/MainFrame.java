@@ -12,6 +12,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -40,33 +41,19 @@ public class MainFrame extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
+			
 					MainFrame frame = new MainFrame();
 					frame.setVisible(true);
 					
 					//defaut startp-up on historyPanel
 					Controller controller = new Controller();
-					controller.createDB();
-					historyButton.doClick();
-					
-					//testing db
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-					Material m = new Material("mat", 20);
-					Action a = new Action("reparationn",m,"tsagmo","","",LocalDateTime.now().format(formatter));
-					
-					controller.insert(a);
-					controller.insert(a);
-					controller.insert(a);
-					controller.insert(a);
-					
-					ArrayList<Action> list = new ArrayList<Action>();
-					list = controller.getAll("date");
-					for (Action item : list ) {
-						System.out.println(item.getActionType());
+					try {
+						controller.createDB();
+					} catch (ClassNotFoundException | SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+					historyButton.doClick();
 			}
 		});
 	}
@@ -138,7 +125,13 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//add panel changes
-				HistoryPanel historyPanel = new HistoryPanel();
+				HistoryPanel historyPanel = null;
+				try {
+					historyPanel = new HistoryPanel();
+				} catch (ClassNotFoundException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				splitPane.setBottomComponent(historyPanel);
 				splitPane.setDividerLocation(50);
 			}
@@ -152,6 +145,7 @@ public class MainFrame extends JFrame {
 				//add panel changes
 				ActionsPanel actionsPanel = new ActionsPanel();
 				splitPane.setBottomComponent(actionsPanel);
+				actionsPanel.setDate();
 				splitPane.setDividerLocation(50);
 			}
 			

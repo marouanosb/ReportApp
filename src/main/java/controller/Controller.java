@@ -23,9 +23,17 @@ public class Controller  {
 	}
 	
 	public ArrayList<Action> getAll(String orderBy) throws ClassNotFoundException, SQLException {
-		if (orderBy == "date")	orderBy += "_"; //in database its name is date_ not date due to conflictions
+		orderBy = orderBy.toLowerCase();
+		
+		if (orderBy.equals("date"))	orderBy = "date_";
+		if (orderBy.equals("action")) orderBy = "actionType";
 		
 		return DatabaseService.getAll(orderBy);
+	}
+	
+	public ArrayList<Action> search(String searchBy) throws ClassNotFoundException, SQLException {
+		searchBy = searchBy.toLowerCase();
+		return DatabaseService.search(searchBy);
 	}
 	
 }

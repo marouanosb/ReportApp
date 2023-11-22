@@ -10,6 +10,9 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import controller.Controller;
+import models.Action;
+
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
@@ -18,10 +21,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import java.awt.Font;
@@ -29,6 +35,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.JSpinner;
 import javax.swing.JList;
 import javax.swing.JComboBox;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class HistoryPanel extends JPanel {
 
@@ -38,19 +46,20 @@ public class HistoryPanel extends JPanel {
 	private JTable historyTable;
 	private int selectedRow;
 	private Boolean filtered;	//to check is a filter is ongoing
+	JComboBox sortList;
+	Controller controller;
+	ArrayList<Action> data;
 	
 	/**
 	 * Create the panel.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public HistoryPanel() {
+	public HistoryPanel() throws ClassNotFoundException, SQLException {
 		setBounds(0,0,1000,500);
 		setBackground(new Color(213, 234, 255));
 		
-		String data[][]={{"cassé","briques","20","taho m sma","-","-","12/12/2012"},    
-                {"reparation","madriya","5","voila","-","-","12/12/2021"},
-                {"deplacement","slouka","30","bach yarabto jcp","magasin A","magasin B", "18/01/2022"}, 
-                {"deplacement","bala","3","yahafro","magasin A","magasin B", "18/01/2022"}, 
-                {"deplacement","bala","3","rej3ouhoum","magain B","magasin A", "19/01/2022"}};  
+		
  
 		
 		String columns[]= {"Action","Material","Quantity","Description","From","To","Date"};
@@ -61,14 +70,32 @@ public class HistoryPanel extends JPanel {
 		
 				
 				searchBar = new JTextField();
-				searchBar.setBounds(30, 30, 295, 27);
+				searchBar.setBounds(60, 60, 295, 27);
 				searchBar.setForeground(Color.GRAY);	//setting hint text 
 				searchBar.setText(hint);
 				searchBar.setFont(new Font("Arial", Font.PLAIN, 14));
 				add(searchBar);
 				searchBar.setColumns(10);
 				searchBar.setMargin(new Insets(0,5,0,5));
-				searchBar.setBorder(new EmptyBorder(5, 5, 5, 5));
+				//searchBar.setBorder(new EmptyBorder(5, 5, 5, 5));
+				searchBar.setBorder(new LineBorder(new Color(0, 0, 160), 1, true));	//added border apply it to OTHERS
+				//trigger search function through db
+				searchBar.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyReleased(KeyEvent e) {
+						
+						String searchBy = searchBar.getText();
+						
+						try {
+							data = controller.search(searchBy);
+						} catch (ClassNotFoundException | SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+						showData(data);
+					}
+				});
 				
 				
 				
@@ -94,30 +121,35 @@ public class HistoryPanel extends JPanel {
 		String[] filters = {"Date","Action", "Material"};
 		filtered = false;
 
-		JComboBox sortList = new JComboBox(filters);
-		sortList.setBounds(840, 30, 130, 27);
+		sortList = new JComboBox(filters);
+		sortList.setFont(new Font("Arial", Font.PLAIN, 14));
+		sortList.setBounds(870, 60, 130, 27);
 		sortList.setSelectedIndex(0);
 		sortList.setBackground(Color.WHITE);
 		
 		//handle sorting table
 		sortList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-                sortData(data);
-                showData(data,historyTable);
-               
+				controller = new Controller();
+				try {
+					data = controller.getAll(sortList.getSelectedItem().toString());
+				} catch (ClassNotFoundException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+                showData(data);   
 			}
 		});
 		add(sortList);
 		
 		historyTable = new JTable();
 		historyTable.setModel(dtm);
-		showData(data,historyTable);
+		
 		historyTable.setFillsViewportHeight(true);
 		historyTable.setBounds(30, 90, 940, 350);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(30, 92, 940, 402);
+		scrollPane.setBounds(60, 120, 940, 402);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrollPane);
 		scrollPane.setViewportView(historyTable);
@@ -163,21 +195,30 @@ public class HistoryPanel extends JPanel {
 	    });
 	    */
 	
+		//initial data fill through event trigger
+		ActionEvent event = new ActionEvent(sortList, ActionEvent.ACTION_PERFORMED, "Selection");
+		for (ActionListener listener : sortList.getActionListeners()) {
+            listener.actionPerformed(event);
+        }
+				
+				
 	}
 	
 	//FUNCTIONS
-	public void showData(String[][] data, JTable table) {
-		resetTable(table);
-		for(String[] row : data)
-		((DefaultTableModel) table.getModel()).addRow(row);
+	public void showData(ArrayList<Action> data) {
+		resetTable(historyTable);
+		for(Action action : data) {
+			String[] a = {action.getActionType(),
+                    action.getMaterial().getName(),
+                    Integer.toString(action.getMaterial().getQuantity()),
+                    action.getDescription(),
+                    action.getFrom(),
+                    action.getTo(),
+                    action.getDate()};
+		((DefaultTableModel) historyTable.getModel()).addRow(a);
+		}
 	}
-	
-	public String[][] sortData(String[][] data){
-		String[][] sortedData = null;
-		
-		return sortedData;
-		
-	}
+
 	public void resetTable(JTable table) {
 		((DefaultTableModel) table.getModel()).setRowCount(0);
 	}
