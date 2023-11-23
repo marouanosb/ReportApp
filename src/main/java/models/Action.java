@@ -3,6 +3,7 @@ package models;
 import java.sql.Date;
 
 public class Action {
+	private String idAction;
 	private String actionType;
 	private Material material;
 	private String description;
@@ -11,6 +12,17 @@ public class Action {
 	private String date;
 	
 	public Action(String actionType, Material material, String description, String from, String to, String date) {
+		this.actionType = actionType;
+		this.material = material;
+		this.description = description;
+		this.from = from;
+		this.to = to;
+		this.date = date;
+		
+	}
+	
+	public Action(String idAction, String actionType, Material material, String description, String from, String to, String date) {
+		this.idAction = idAction;
 		this.actionType = actionType;
 		this.material = material;
 		this.description = description;
@@ -66,6 +78,14 @@ public class Action {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public String getIdAction() {
+		return idAction;
+	}
+
+	public void setIdAction(String idAction) {
+		this.idAction = idAction;
 	}
 
 }

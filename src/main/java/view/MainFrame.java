@@ -9,16 +9,21 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -27,12 +32,16 @@ import javax.swing.JSplitPane;
 import java.awt.FlowLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Toolkit;
 
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	static ColoredBorderButton historyButton;
+	String iconPath = System.getProperty("user.dir")+"\\src\\main\\resources\\icons\\";
+	int iconWidth = 25;
+	int iconHeight = 25;
 
 
 	/**
@@ -52,7 +61,12 @@ public class MainFrame extends JFrame {
 					} catch (ClassNotFoundException | SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+					
+					//set default view as history panel
 					historyButton.doClick();
 			}
 		});
@@ -62,6 +76,12 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(iconPath+"\\text-file-6-xxl.png"));
+
+		// Set the frame to fullscreen
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setTitle("ReportApp");
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1000, 500);
 		setResizable(false);
@@ -81,6 +101,11 @@ public class MainFrame extends JFrame {
 		EmptyBorder border= new EmptyBorder(5, 5, 5, 5);
 		
 		historyButton = new ColoredBorderButton("History");
+		
+		ImageIcon historyIcon = new ImageIcon(iconPath+"\\view-details-xxl.png");
+		ImageIcon resizedHistoryIcon = new ImageIcon(historyIcon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+		historyButton.setIcon(resizedHistoryIcon);
+		
 		historyButton.setBorder(border);
 		historyButton.setBackground(new Color(0, 128, 255));
 		historyButton.setForeground(new Color(255, 255, 255));
@@ -90,6 +115,11 @@ public class MainFrame extends JFrame {
 		menuPanel.add(historyButton);
 		
 		ColoredBorderButton actionsButton = new ColoredBorderButton("Actions");
+		
+		ImageIcon actionsIcon = new ImageIcon(iconPath+"\\add-list-xxl.png");
+		ImageIcon resizedActionsIcon = new ImageIcon(actionsIcon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+		actionsButton.setIcon(resizedActionsIcon);
+		
 		actionsButton.setBorder(border);
 		actionsButton.setForeground(new Color(255, 255, 255));
 		actionsButton.setBackground(new Color(0, 128, 255));
@@ -99,6 +129,11 @@ public class MainFrame extends JFrame {
 		menuPanel.add(actionsButton);
 		
 		ColoredBorderButton settingsButton = new ColoredBorderButton("Settings");
+		
+		ImageIcon settingsIcon = new ImageIcon(iconPath+"\\settings-12-xxl.png");
+		ImageIcon resizedSettingsIcon = new ImageIcon(settingsIcon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+		settingsButton.setIcon(resizedSettingsIcon);
+		
 		settingsButton.setBorder(border);
 		settingsButton.setForeground(new Color(255, 255, 255));
 		settingsButton.setBackground(new Color(0, 128, 255));
@@ -111,13 +146,7 @@ public class MainFrame extends JFrame {
 		splitPane.setDividerLocation(50);
 		splitPane.setDividerSize(1);
 		splitPane.setEnabled(false);	//disable the function of resizing divider
-		
-		
-		// Set the frame to fullscreen
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setUndecorated(false);
-		
-		setTitle("ReportApp");
+
 		
 		// Button functions
 		historyButton.addActionListener(new ActionListener() {
@@ -145,7 +174,6 @@ public class MainFrame extends JFrame {
 				//add panel changes
 				ActionsPanel actionsPanel = new ActionsPanel();
 				splitPane.setBottomComponent(actionsPanel);
-				actionsPanel.setDate();
 				splitPane.setDividerLocation(50);
 			}
 			

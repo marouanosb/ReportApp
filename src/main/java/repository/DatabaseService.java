@@ -18,20 +18,21 @@ public class DatabaseService {
             Class.forName("org.sqlite.JDBC");
 
             // Create a connection to the database
-            connection = DriverManager.getConnection("jdbc:sqlite:bdd.db");
+            connection = DriverManager.getConnection("jdbc:sqlite:database/bdd.db");
 
     }
 
     public static void initialiseDB() throws SQLException, ClassNotFoundException {
     	connectDB();
         String createTable = "CREATE TABLE IF NOT EXISTS stock("
+        					+ "idAction INTEGER PRIMARY KEY AUTOINCREMENT ,"
         					+ "actionType TEXT,"
         					+ "material TEXT,"
         					+ "quantity INTEGER,"
         					+ "description TEXT,"
         					+ "from_ TEXT,"
         					+ "to_ TEXT,"
-        					+ "date_ TEXT)";
+        					+ "date_ DATE)";
         PreparedStatement preparedStatement = connection.prepareStatement(createTable);
         preparedStatement.execute();
     }
@@ -40,13 +41,15 @@ public class DatabaseService {
 		ArrayList<Action> data = new ArrayList<Action>();
 		connectDB();
 		// Execute a SELECT query
-	    String selectQuery = "SELECT * FROM stock ORDER BY " +orderBy+ " DESC";
+	    String selectQuery = "SELECT * FROM stock ORDER BY " +orderBy;
+	    if (orderBy == "date_") selectQuery += " DESC";
 	    PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
 	    ResultSet resultSet = preparedStatement.executeQuery();
 	        // Process the result set
 	        while (resultSet.next()) {
 	        	Material material = new Material(resultSet.getString("material"), resultSet.getInt("quantity"));
-	            Action action = new Action (resultSet.getString("actionType"),
+	            Action action = new Action (resultSet.getString("idAction"),
+	            							resultSet.getString("actionType"),
 	            							material,
 	            							resultSet.getString("description"),
 	            							resultSet.getString("from_"),
@@ -63,16 +66,16 @@ public class DatabaseService {
 	public static void insert(Action action) throws SQLException, ClassNotFoundException{
 		connectDB();
 		// Execute an INSERT query
-	    String insertQuery = "INSERT INTO stock VALUES(?,?,?,?,?,?,?)";
+	    String insertQuery = "INSERT INTO stock VALUES(?,?,?,?,?,?,?,?)";
 	    PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
 	    
-	    preparedStatement.setString(1, action.getActionType());
-	    preparedStatement.setString(2, action.getMaterial().getName());
-	    preparedStatement.setInt(3, action.getMaterial().getQuantity());
-	    preparedStatement.setString(4, action.getDescription());
-	    preparedStatement.setString(5, action.getFrom());
-	    preparedStatement.setString(6, action.getTo());
-	    preparedStatement.setString(7, action.getDate());
+	    preparedStatement.setString(2, action.getActionType());
+	    preparedStatement.setString(3, action.getMaterial().getName());
+	    preparedStatement.setInt(4, action.getMaterial().getQuantity());
+	    preparedStatement.setString(5, action.getDescription());
+	    preparedStatement.setString(6, action.getFrom());
+	    preparedStatement.setString(7, action.getTo());
+	    preparedStatement.setString(8, action.getDate());
 	    
 		preparedStatement.executeUpdate();
 		System.out.println("Inserted successfully.");
@@ -85,7 +88,7 @@ public class DatabaseService {
 	    PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
 	    preparedStatement.executeUpdate();
 	    
-	    System.out.println("Deleted successfully.");
+	    System.out.println("Deleted all successfully.");
 	}
 	
 	public static ArrayList<Action> search(String searchBy) throws ClassNotFoundException, SQLException{
@@ -103,7 +106,8 @@ public class DatabaseService {
 	    ResultSet resultSet = preparedStatement.executeQuery();
 		while (resultSet .next()) {
         	Material material = new Material(resultSet.getString("material"), resultSet.getInt("quantity"));
-            Action action = new Action (resultSet.getString("actionType"),
+            Action action = new Action (resultSet.getString("idAction"),
+            							resultSet.getString("actionType"),
             							material,
             							resultSet.getString("description"),
             							resultSet.getString("from_"),
@@ -113,6 +117,17 @@ public class DatabaseService {
             data.add(action);
         }
 		return data;
+	}
+	
+	public static void deleteAction(ArrayList<String> ids) throws SQLException, ClassNotFoundException{
+		connectDB();
+		for(String id : ids) {
+			String deleteQuery = "DELETE FROM stock WHERE idAction = "+id;
+		    PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
+		    preparedStatement.executeUpdate();
+		    
+		    System.out.println("Deleted successfully.");
+		}
 	}
 	
 	

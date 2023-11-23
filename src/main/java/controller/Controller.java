@@ -3,6 +3,7 @@ package controller;
 import repository.DatabaseService;
 import repository.DatabaseCreation;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -10,7 +11,7 @@ import models.Action;
 
 public class Controller  {
 	
-	public void createDB() throws ClassNotFoundException, SQLException {
+	public void createDB() throws ClassNotFoundException, SQLException, IOException {
 		DatabaseCreation.createDB();
 	}
 	
@@ -34,6 +35,10 @@ public class Controller  {
 	public ArrayList<Action> search(String searchBy) throws ClassNotFoundException, SQLException {
 		searchBy = searchBy.toLowerCase();
 		return DatabaseService.search(searchBy);
+	}
+	
+	public void deleteAction(ArrayList<String> ids) throws ClassNotFoundException, SQLException{
+		DatabaseService.deleteAction(ids);
 	}
 	
 }

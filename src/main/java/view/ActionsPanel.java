@@ -3,11 +3,16 @@ package view;
 import java.awt.Color;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.plaf.ColorUIResource;
+
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
 
 import controller.Controller;
 import models.Action;
@@ -17,22 +22,27 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JButton;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import javax.swing.JSpinner;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
 
 public class ActionsPanel extends JPanel {
@@ -41,11 +51,15 @@ public class ActionsPanel extends JPanel {
 	private JTextField materialEdit;
 	private JTextField fromEdit;
 	private JTextField toEdit;
-	private JTextField dateEdit;
+	private JDateChooser dateEdit;
 	JComboBox actionList;
 	JSpinner quantityEdit;
 	JEditorPane descriptionEdit;
-
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	String iconPath = System.getProperty("user.dir")+"\\src\\main\\resources\\icons\\";
+	int iconWidth = 15;
+	int iconHeight = 15;
+	
 	/**
 	 * Create the panel.
 	 */
@@ -101,16 +115,16 @@ public class ActionsPanel extends JPanel {
 		
 		materialEdit = new JTextField();
 		materialEdit.setMargin(new Insets(0,5,0,5));
-		materialEdit.setBorder(new EmptyBorder(5, 5, 5, 5));
+		materialEdit.setBorder(new LineBorder(new Color(0, 0, 160), 1, true));
 		materialEdit.setFont(new Font("Arial", Font.PLAIN, 14));
 		materialEdit.setBounds(350, 40, 430, 30);
 		panel.add(materialEdit);
 		materialEdit.setColumns(10);
 		
 		quantityEdit = new JSpinner();
+		quantityEdit.setBorder(new LineBorder(new Color(0, 0, 160), 1, true));
 		quantityEdit.setModel(new SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
 		quantityEdit.setBackground(Color.WHITE);
-		quantityEdit.setBorder(new EmptyBorder(5, 5, 5, 5));
 		quantityEdit.setFont(new Font("Arial", Font.PLAIN, 14));
 		quantityEdit.setBounds(805, 40, 50, 30);
 		panel.add(quantityEdit);
@@ -126,7 +140,10 @@ public class ActionsPanel extends JPanel {
 		panel.add(lblNewLabel_2);
 		
 		JButton saveActionButton = new JButton("Save Action");
-		
+		ImageIcon saveAcitionIcon = new ImageIcon(iconPath+"\\plus-7-xxl.png");
+		ImageIcon resizedsaveAcitionIcon = new ImageIcon(saveAcitionIcon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+		saveActionButton.setIcon(resizedsaveAcitionIcon);
+		saveActionButton.setFocusPainted(false);
 		saveActionButton.setBackground(new Color(0, 128, 255));
 		saveActionButton.setForeground(new Color(255, 255, 255));
 		saveActionButton.setMargin(new Insets(0,5,0,5));
@@ -148,16 +165,16 @@ public class ActionsPanel extends JPanel {
 		});
 		
 		fromEdit = new JTextField();
+		fromEdit.setBorder(new LineBorder(new Color(0, 0, 160), 1, true));
 		fromEdit.setMargin(new Insets(0,5,0,5));
-		fromEdit.setBorder(new EmptyBorder(5, 5, 5, 5));
 		fromEdit.setFont(new Font("Arial", Font.PLAIN, 14));
 		fromEdit.setColumns(10);
 		fromEdit.setBounds(30, 105, 230, 30);
 		panel.add(fromEdit);
 		
 		toEdit = new JTextField();
+		toEdit.setBorder(new LineBorder(new Color(0, 0, 160), 1, true));
 		toEdit.setMargin(new Insets(0,5,0,5));
-		toEdit.setBorder(new EmptyBorder(5, 5, 5, 5));
 		toEdit.setFont(new Font("Arial", Font.PLAIN, 14));
 		toEdit.setColumns(10);
 		toEdit.setBounds(290, 105, 230, 30);
@@ -173,13 +190,14 @@ public class ActionsPanel extends JPanel {
 		lblNewLabel_4.setBounds(290, 77, 230, 30);
 		panel.add(lblNewLabel_4);
 		
-		dateEdit = new JTextField();
-		dateEdit.setMargin(new Insets(0,5,0,5));
-		dateEdit.setBorder(new EmptyBorder(5, 5, 5, 5));
+		dateEdit = new JDateChooser(new Date());
+		dateEdit.setBorder(new LineBorder(new Color(0, 0, 160), 1, true));
+		dateEdit.setDateFormatString("dd/MM/yyyy");
 		dateEdit.setFont(new Font("Arial", Font.PLAIN, 14));
-		dateEdit.setColumns(10);
 		dateEdit.setBounds(625, 110, 230, 30);
 		panel.add(dateEdit);
+		
+		
 		
 		JLabel lblNewLabel_4_1 = new JLabel("Date :");
 		lblNewLabel_4_1.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -187,8 +205,9 @@ public class ActionsPanel extends JPanel {
 		panel.add(lblNewLabel_4_1);
 		
 		descriptionEdit = new JEditorPane();
+		
 		descriptionEdit.setMargin(new Insets(0,5,0,5));
-		descriptionEdit.setBorder(new EmptyBorder(5, 5, 5, 5));
+		descriptionEdit.setBorder(new LineBorder(new Color(0, 0, 160), 1, true));
 		descriptionEdit.setFont(new Font("Arial", Font.PLAIN, 14));
 		descriptionEdit.setBounds(30, 180, 825, 100);
 		panel.add(descriptionEdit);
@@ -198,25 +217,32 @@ public class ActionsPanel extends JPanel {
 		lblNewLabel_3_1.setBounds(30, 146, 230, 30);
 		panel.add(lblNewLabel_3_1);
 	
-	}
+}
 	
-	//FUNCTIONS
-	public void setDate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");	//maybe add HOUR & JCALENDAR
-		dateEdit.setText(LocalDateTime.now().format(formatter));
-	}
 	
 	public void saveAction() throws ClassNotFoundException, SQLException {
-		//doTests
-		Material material = new Material(materialEdit.getText(), (int) quantityEdit.getValue());
-		Action action = new Action(actionList.getSelectedItem().toString(),
-									material,
-									descriptionEdit.getText(),
-									fromEdit.getText(),
-									toEdit.getText(),
-									dateEdit.getText());
-		Controller controller = new Controller();
-		controller.insert(action);
+		if(		dateEdit.getDate() == null ||
+				materialEdit.getText().isEmpty() || (actionList.getSelectedItem().toString() == "Déplacement"
+				&& (fromEdit.getText().isEmpty() || toEdit.getText().isEmpty()))) {
+			int choice = JOptionPane.showConfirmDialog(
+	                null,
+	                "Some required fields are empty.",
+	                "Empty fields",
+	                JOptionPane.DEFAULT_OPTION
+	        );	
+		}else {
+			Material material = new Material(materialEdit.getText(), (int) quantityEdit.getValue());
+			Action action = new Action(actionList.getSelectedItem().toString(),
+										material,
+										descriptionEdit.getText(),
+										fromEdit.getText(),
+										toEdit.getText(),
+										new SimpleDateFormat("dd/MM/yyyy").format(dateEdit.getDate()));
+			Controller controller = new Controller();
+			controller.insert(action);
+		}
+	
+		
 	}
 	
 }
