@@ -43,6 +43,7 @@ public class DatabaseService {
 		// Execute a SELECT query
 	    String selectQuery = "SELECT * FROM stock ORDER BY " +orderBy;
 	    if (orderBy == "date_") selectQuery += " DESC";
+	    selectQuery += ", idAction DESC";
 	    PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
 	    ResultSet resultSet = preparedStatement.executeQuery();
 	        // Process the result set

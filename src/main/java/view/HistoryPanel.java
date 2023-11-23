@@ -10,11 +10,15 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.swing.plaf.basic.BasicButtonUI;
 
 import controller.Controller;
 import models.Action;
 
+import java.awt.AWTEvent;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -28,24 +32,33 @@ import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JToolTip;
+import javax.swing.Painter;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import java.awt.Font;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.JSpinner;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.FocusAdapter;
 import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
+import java.awt.event.MouseMotionAdapter;
 
 public class HistoryPanel extends JPanel {
 
@@ -61,6 +74,10 @@ public class HistoryPanel extends JPanel {
 	String iconPath = System.getProperty("user.dir")+"\\src\\main\\resources\\icons\\";
 	int iconWidth = 15;
 	int iconHeight = 15;
+	private JTextField totalQuantityText;
+	int totalQuantity = 0;
+	Boolean alreadySelected = false;
+	
 
 	
 	/**
@@ -70,13 +87,13 @@ public class HistoryPanel extends JPanel {
 	 */
 	public HistoryPanel() throws ClassNotFoundException, SQLException {
 		
-		setBounds(0,0,1000,500);
+		setBounds(0,0,1000,735);
 		setBackground(new Color(213, 234, 255));
 		
 		
  
 		
-		String columns[]= {"Action","Material","Quantity","Description","From","To","Date"};
+		String columns[]= {"Action","Material","Qty","Description","From","To","Date"};
 		DefaultTableModel dtm = new DefaultTableModel(0, 0);
 		dtm.setColumnIdentifiers(columns);
 		String hint = "Search...";
@@ -160,7 +177,6 @@ public class HistoryPanel extends JPanel {
 		historyTable.setFont(new Font("Arial", Font.PLAIN, 14));
 		
 		historyTable.setModel(dtm);
-		
 		TableColumnModel cm = historyTable.getColumnModel();
 		cm.getColumn(0).setPreferredWidth(50);
 		cm.getColumn(1).setPreferredWidth(125);
@@ -169,12 +185,25 @@ public class HistoryPanel extends JPanel {
 		cm.getColumn(4).setPreferredWidth(85);
 		cm.getColumn(5).setPreferredWidth(85);
 		cm.getColumn(6).setPreferredWidth(50);
-		
 		historyTable.setRowHeight(20);
 
-		
 		historyTable.setFillsViewportHeight(true);
 		historyTable.setBounds(30, 90, 940, 350);
+		
+		historyTable.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				int row = historyTable.rowAtPoint(e.getPoint());
+                int col = historyTable.columnAtPoint(e.getPoint());
+
+                if (row >= 0 && col == 3) {
+                    // Set tooltip text for the specific row and column
+                	historyTable.setToolTipText(data.get(row).getDescription());
+                } else {
+                	historyTable.setToolTipText(null); // No tooltip if not over a cell
+                }
+			}
+		});
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(60, 120, 940, 402);
@@ -183,7 +212,7 @@ public class HistoryPanel extends JPanel {
 		add(scrollPane);
 		scrollPane.setViewportView(historyTable);
 		
-					
+
 		historyTable.getTableHeader().setBackground(new Color(0, 128, 255));	//change header color
 		historyTable.getTableHeader().setForeground(Color.WHITE);
 		scrollPane.getVerticalScrollBar().setBackground(new Color(0, 128, 255));
@@ -193,14 +222,14 @@ public class HistoryPanel extends JPanel {
 			@Override
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				selectedRow = historyTable.rowAtPoint(evt.getPoint());
-				System.out.println((String) historyTable.getValueAt(selectedRow,0)); 
 			}
 		});
 		historyTable.setDefaultEditor(Object.class, null);
 		
 		
+		
 		// style changes to scroll bar remove from comments after done
-		/*scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI()
+		scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI()
 	    {   
 			@Override
 		    protected JButton createDecreaseButton(int orientation) {
@@ -217,12 +246,12 @@ public class HistoryPanel extends JPanel {
 		    }
 	        @Override 
 	        protected void configureScrollBarColors(){
-	        	this.thumbColor = new Color(213, 234, 255);
+	        	//this.thumbColor = new Color(213, 234, 255);
+	        	this.thumbColor = Color.WHITE;
 
 	        }
 	    });
-	    */
-	
+	    
 		//initial data fill through event trigger
 		JButton deleteButton = new JButton("Delete");
 		ImageIcon deleteIcon = new ImageIcon(iconPath+"\\trash-2-xxl.png");
@@ -293,15 +322,39 @@ public class HistoryPanel extends JPanel {
 			}
 		});*/
 		
+
 		//handle clear selection
 		historyTable.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				
+				//historyTable.clearSelection();
 			}
 		});
 		
 		
+		
+
+	
+		
+		totalQuantityText = new JTextField();
+		totalQuantityText.setHorizontalAlignment(SwingConstants.CENTER);
+		totalQuantityText.setForeground(new Color(255, 255, 255));
+		totalQuantityText.setFont(new Font("Arial", Font.PLAIN, 14));
+		totalQuantityText.setText("0");
+		totalQuantityText.setBackground(new Color(30, 144, 255));
+		totalQuantityText.setEditable(false);
+		totalQuantityText.setBounds(323, 530, 60, 30);
+		totalQuantityText.setMargin(new Insets(0,5,0,5));
+		totalQuantityText.setBorder(new EmptyBorder(5, 5, 5, 5));
+		add(totalQuantityText);
+		totalQuantityText.setColumns(10);
+	
+		JLabel lblNewLabel = new JLabel("Total Qty:");
+		lblNewLabel.setFont(new Font("Arial", Font.BOLD, 14));
+		lblNewLabel.setBounds(250, 530, 75, 30);
+		add(lblNewLabel);
+		
+		//trigger first sort to show data
 		ActionEvent event = new ActionEvent(sortList, ActionEvent.ACTION_PERFORMED, "Selection");
 		for (ActionListener listener : sortList.getActionListeners()) {
             listener.actionPerformed(event);
@@ -323,11 +376,16 @@ public class HistoryPanel extends JPanel {
                     action.getTo(),
                     action.getDate()};
 		((DefaultTableModel) historyTable.getModel()).addRow(a);
+		totalQuantity += action.getMaterial().getQuantity();
 		}
+		//update the total qty text
+		totalQuantityText.setText(Integer.toString(totalQuantity));
+		
 	}
 
 	public void resetTable(JTable table) {
 		((DefaultTableModel) table.getModel()).setRowCount(0);
+		totalQuantity = 0;
 	}
 	
 	public void deleteAction(ArrayList<Action> data, int[] selectedRows) throws ClassNotFoundException, SQLException {

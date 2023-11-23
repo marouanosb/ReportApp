@@ -56,7 +56,7 @@ public class SettingsPanel extends JPanel {
 		
 		JLabel lblNewLabel = new JLabel("Report :");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		lblNewLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+		lblNewLabel.setFont(new Font("Arial", Font.BOLD, 24));
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.insets = new Insets(30, 30, 5, 5);
 		gbc_lblNewLabel.gridx = 1;
@@ -141,7 +141,7 @@ public class SettingsPanel extends JPanel {
 		
 		JLabel lblNewLabel_1 = new JLabel("Data :");
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.LEFT);
-		lblNewLabel_1.setFont(new Font("Arial", Font.PLAIN, 24));
+		lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 24));
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(10, 30, 5, 5);
 		gbc_lblNewLabel_1.gridx = 1;
@@ -165,6 +165,17 @@ public class SettingsPanel extends JPanel {
 		gbc_importDataButton.gridx = 1;
 		gbc_importDataButton.gridy = 6;
 		add(importDataButton, gbc_importDataButton);
+		
+		importDataButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					gotoPath(path+"/database");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		JButton exportDataButton = new JButton("Export Data");
 		ImageIcon exportDataIcon = new ImageIcon(iconPath+"\\upload-3-xxl.png");
