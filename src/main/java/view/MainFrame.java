@@ -39,7 +39,7 @@ public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	static ColoredBorderButton historyButton;
-	String iconPath = System.getProperty("user.dir")+"\\src\\main\\resources\\icons\\";
+	String iconPath = System.getProperty("user.dir")+"\\resources\\icons\\";
 	int iconWidth = 25;
 	int iconHeight = 25;
 

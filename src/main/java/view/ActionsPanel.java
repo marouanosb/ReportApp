@@ -56,7 +56,7 @@ public class ActionsPanel extends JPanel {
 	JSpinner quantityEdit;
 	JEditorPane descriptionEdit;
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	String iconPath = System.getProperty("user.dir")+"\\src\\main\\resources\\icons\\";
+	String iconPath = System.getProperty("user.dir")+"\\resources\\icons\\";
 	int iconWidth = 15;
 	int iconHeight = 15;
 	
@@ -92,12 +92,15 @@ public class ActionsPanel extends JPanel {
 		panel.add(lblNewLabel);
 		
 		actionList = new JComboBox();
-		actionList.setModel(new DefaultComboBoxModel(new String[] {"Déplacement", "Réparation", "Cassé"}));
+		actionList.setModel(new DefaultComboBoxModel(new String[] {"Déplacement", "Réparation", "Retour"}));
 		actionList.setSelectedIndex(0);
 		actionList.setBackground(Color.WHITE);
 		actionList.setFont(new Font("Arial", Font.PLAIN, 14));
 		actionList.setBounds(30, 40, 230, 30);
 		panel.add(actionList);
+		
+		/*
+		//disable from/to 
 		actionList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(actionList.getSelectedIndex() != 0) {	//if action is not transfer disable from/to
@@ -112,6 +115,7 @@ public class ActionsPanel extends JPanel {
 				
 			}
 		});
+		*/
 		
 		materialEdit = new JTextField();
 		materialEdit.setMargin(new Insets(0,5,0,5));
@@ -222,8 +226,8 @@ public class ActionsPanel extends JPanel {
 	
 	public void saveAction() throws ClassNotFoundException, SQLException {
 		if(		dateEdit.getDate() == null ||
-				materialEdit.getText().isEmpty() || (actionList.getSelectedItem().toString() == "Déplacement"
-				&& (fromEdit.getText().isEmpty() || toEdit.getText().isEmpty()))) {
+				materialEdit.getText().isEmpty() || (actionList.getSelectedIndex() == 0)
+				&& (fromEdit.getText().isEmpty() || toEdit.getText().isEmpty())) {
 			int choice = JOptionPane.showConfirmDialog(
 	                null,
 	                "Some required fields are empty.",

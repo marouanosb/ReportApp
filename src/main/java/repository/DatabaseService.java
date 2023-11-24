@@ -95,8 +95,9 @@ public class DatabaseService {
 	public static ArrayList<Action> search(String searchBy) throws ClassNotFoundException, SQLException{
 		connectDB();
 		ArrayList<Action> data = new ArrayList<Action>();
-		String selectQuery = "SELECT * FROM stock WHERE"			
-			    + " material LIKE '%" + searchBy + "%'"
+		String selectQuery = "SELECT * FROM stock WHERE"
+				+ " actionType LIKE '%" + searchBy + "%'"
+			    + " OR material LIKE '%" + searchBy + "%'"
 			    + " OR quantity LIKE '%" + searchBy + "%'"
 			    + " OR description LIKE '%" + searchBy + "%'"
 			    + " OR from_ LIKE '%" + searchBy + "%'"

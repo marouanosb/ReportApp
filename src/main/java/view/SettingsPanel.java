@@ -23,16 +23,22 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.awt.event.ActionEvent;
 
 public class SettingsPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	String path = System.getProperty("user.dir");
-	String iconPath = System.getProperty("user.dir")+"\\src\\main\\resources\\icons\\";
+	String iconPath = System.getProperty("user.dir")+"\\resources\\icons\\";
 	int iconWidth = 15;
 	int iconHeight = 15;
 
@@ -150,6 +156,7 @@ public class SettingsPanel extends JPanel {
 		add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
 		JButton importDataButton = new JButton("Import Data");
+		importDataButton.setToolTipText("Copy external \".db\" file here and change its name to \"bdd.db\"");
 		ImageIcon importDataIcon = new ImageIcon(iconPath+"\\download-2-xxl.png");
 		ImageIcon resizedImportDataIcon = new ImageIcon(importDataIcon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
 		importDataButton.setIcon(resizedImportDataIcon);
@@ -197,7 +204,13 @@ public class SettingsPanel extends JPanel {
 		exportDataButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					gotoPath(path+"/database");
+					gotoPath(path+"/exports");
+					java.util.Date date = Calendar.getInstance().getTime();   
+					String newBddName = "bdd_" + new SimpleDateFormat("dd-MM-yyyy_HH-mm").format(date);
+			        // Copy the file
+					Files.copy(Paths.get(path+"/database/bdd.db"),
+							   Paths.get(path+"/exports/"+newBddName+".db"));
+			        System.out.println("Database exported successfully!");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

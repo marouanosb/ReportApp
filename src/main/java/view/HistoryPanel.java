@@ -59,6 +59,7 @@ import java.awt.event.FocusAdapter;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import java.awt.event.MouseMotionAdapter;
+import java.net.URL;
 
 public class HistoryPanel extends JPanel {
 
@@ -71,12 +72,13 @@ public class HistoryPanel extends JPanel {
 	JComboBox sortList;
 	Controller controller;
 	ArrayList<Action> data;
-	String iconPath = System.getProperty("user.dir")+"\\src\\main\\resources\\icons\\";
+	String iconPath = System.getProperty("user.dir")+"\\resources\\icons\\";
 	int iconWidth = 15;
 	int iconHeight = 15;
 	private JTextField totalQuantityText;
 	int totalQuantity = 0;
 	Boolean alreadySelected = false;
+	JLabel numberOfResultsText;
 	
 
 	
@@ -225,8 +227,7 @@ public class HistoryPanel extends JPanel {
 			}
 		});
 		historyTable.setDefaultEditor(Object.class, null);
-		
-		
+
 		
 		// style changes to scroll bar remove from comments after done
 		scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI()
@@ -354,6 +355,14 @@ public class HistoryPanel extends JPanel {
 		lblNewLabel.setBounds(250, 530, 75, 30);
 		add(lblNewLabel);
 		
+	
+		
+		numberOfResultsText = new JLabel("0 Results found");
+		numberOfResultsText.setHorizontalAlignment(SwingConstants.RIGHT);
+		numberOfResultsText.setFont(new Font("Arial", Font.PLAIN, 14));
+		numberOfResultsText.setBounds(840, 533, 150, 30);
+		add(numberOfResultsText);
+		
 		//trigger first sort to show data
 		ActionEvent event = new ActionEvent(sortList, ActionEvent.ACTION_PERFORMED, "Selection");
 		for (ActionListener listener : sortList.getActionListeners()) {
@@ -380,6 +389,7 @@ public class HistoryPanel extends JPanel {
 		}
 		//update the total qty text
 		totalQuantityText.setText(Integer.toString(totalQuantity));
+		numberOfResultsText.setText(Integer.toString(data.size())+" Results found");
 		
 	}
 
